@@ -1,0 +1,9 @@
+﻿ServerBox.Core/bin
+ServerBox.Core/obj
+ServerBox.Data/bin
+ServerBox.Data/obj
+ServerBox.Services/bin
+ServerBox.Services/obj
+ServerBox.Web/obj
+ServerBox.Web/bin
+.idea
