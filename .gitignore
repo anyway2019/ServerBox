@@ -7,3 +7,4 @@ ServerBox.Services/obj
 ServerBox.Web/obj
 ServerBox.Web/bin
 .idea
+ServerBox.Web/log

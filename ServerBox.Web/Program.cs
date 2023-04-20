@@ -8,22 +8,29 @@ using ServerBox.Web.Extensions;
 using ServerBox.Web.Utils;
 using SqlSugar;
 
-var logger = NLog.LogManager.Setup().LoadConfigurationFromFile().GetCurrentClassLogger();
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var logger = NLog.LogManager.Setup().LoadConfigurationFromFile($"nlog.{env}.config").GetCurrentClassLogger();
 logger.Debug("server is starting.");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    var configuration = builder.Configuration
+        .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+        .AddJsonFile($"appsettings.json", optional: false)
+        .AddJsonFile($"appsettings.{env}.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build();
     // 配置 NLog
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     // read config
-    ConfigHelper.RegisterConfiguration(builder.Configuration);
+    ConfigHelper.RegisterConfiguration(configuration);
     // Add Response Compression
     builder.Services.AddResponseCompression();
     // Add memory cache services
     builder.Services.AddMemoryCache();
     // Add services to the container.
-    builder.Services.RegisterCustomServices(builder.Configuration);
+    builder.Services.RegisterCustomServices(configuration);
     // Add sqlsugar
     var connectionString = builder.Configuration["Data:Conn"];
     builder.Services.AddSqlSugarClient<SqlSugarClient>((config) =>
@@ -63,7 +70,7 @@ try
     });
     
     // Add JwtBearer
-    var key = Encoding.ASCII.GetBytes(builder.Configuration["JwtKey"]);
+    var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
     builder.Services
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
