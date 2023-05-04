@@ -3,5 +3,5 @@
 public abstract class BaseEntity
 {
     [SqlSugar.SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-    public virtual long id { get; set; }
+    public virtual long Id { get; set; }
 }

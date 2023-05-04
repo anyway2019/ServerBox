@@ -1,6 +1,7 @@
 ﻿using ServerBox.Core;
 using ServerBox.Core.Dto;
 using Microsoft.AspNetCore.Mvc;
+using ServerBox.Core.Domain;
 using ServerBox.Services;
 
 namespace ServerBox.Web.Controllers;

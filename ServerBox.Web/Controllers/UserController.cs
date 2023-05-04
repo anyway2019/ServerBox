@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using ServerBox.Core;
+using ServerBox.Core.Domain;
 using ServerBox.Services;
 
 namespace ServerBox.Web.Controllers;
@@ -28,7 +28,7 @@ public class UserController : BaseController
     [HttpPost]
     public IActionResult List()
     {
-        var list = _userService.GetAll();
+        var list = _userService.GetPagedList(0,20);
         return SuccessResult(list);
     }
 
@@ -38,7 +38,7 @@ public class UserController : BaseController
     public IActionResult Login(string userName, string password)
     {
         var user = _userService.GetUserByName(userName);
-        if (user == null || user.Status == 0 || user.Password != password.ToLower())
+        if (user == null || user.Status == 0 || user.Pass != password.ToLower())
             return FailResult("Invalid User");
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -48,7 +48,7 @@ public class UserController : BaseController
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, user.id.ToString()),
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, "")
             }),
             Expires = DateTime.UtcNow.AddDays(7),
@@ -77,11 +77,9 @@ public class UserController : BaseController
     {
         var user = new User
         {
-            Name = test,
-            Password = "123",
+            NickName = test,
+            Pass = "123",
             Email = "",
-            Remark = "",
-            CustomerId = 1,
             OpenId = "",
             Status = 1,
             CreateTime = DateTime.Now

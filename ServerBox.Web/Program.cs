@@ -20,6 +20,7 @@ try
         .AddJsonFile($"appsettings.{env}.json", optional: true)
         .AddEnvironmentVariables()
         .Build();
+    
     // 配置 NLog
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
@@ -33,6 +34,8 @@ try
     builder.Services.RegisterCustomServices(configuration);
     // Add sqlsugar
     var connectionString = builder.Configuration["Data:Conn"];
+    //generate entity from connection string.
+    //EntityGenerator.Build(connectionString,"ServerBox.Core.Domain");
     builder.Services.AddSqlSugarClient<SqlSugarClient>((config) =>
     {
         config.ConnectionString = connectionString;
@@ -109,6 +112,7 @@ try
     app.UseCookiePolicy();
 
     app.UseStaticFiles();
+    
     app.UseCors(x => x
         .AllowAnyOrigin().SetPreflightMaxAge(TimeSpan.FromDays(1))
         .AllowAnyMethod()

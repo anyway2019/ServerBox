@@ -28,7 +28,7 @@ public sealed class EfRepository<T> where T : BaseEntity, new()
         ////see some suggested performance optimization (not tested)
         ////http://stackoverflow.com/questions/11686225/dbset-find-method-ridiculously-slow-compared-to-singleordefault-on-id/11688189#comment34876113_11688189
 
-        return Db.Queryable<T>().Single(s => s.id == id);
+        return Db.Queryable<T>().Single(s => s.Id == id);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed class EfRepository<T> where T : BaseEntity, new()
     public void Insert(T entity)
     {
         var id = Db.Insertable(entity).ExecuteReturnBigIdentity();
-        entity.id = id;
+        entity.Id = id;
     }
 
     public long InsertReturnId(T entity)
