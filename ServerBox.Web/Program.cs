@@ -25,6 +25,7 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     // read config
+    ConfigHelper.RegisterEnvironment(env);
     ConfigHelper.RegisterConfiguration(configuration);
     // Add Response Compression
     builder.Services.AddResponseCompression();
