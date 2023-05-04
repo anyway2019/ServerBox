@@ -11,6 +11,16 @@ public static class ConfigHelper
     public static string BucketName { get; set; }
     public static string OSSKeyId { get; set; }
     public static string OSSKeySecret{ get; set; }
+    
+    public static string SmsAccessKeyId{ get; set; }
+    public static string SmsAccessKeySecret{ get; set; }
+    public static string SmsSignName{ get; set; }
+    public static string SmsCaptchaTemplateCode{ get; set; }
+    public static string SmsCaptchaTemplateCodeEn{ get; set; }
+    public static string WechatAppId{ get; set; }
+    public static string WechatAppSecret{ get; set; }
+    
+    public static string WechatOfficialAccount{ get; set; }
 
     public static void RegisterEnvironment(string environment)
     {
@@ -25,5 +35,13 @@ public static class ConfigHelper
         BucketName = Configuration["OSS:BucketName"];
         OSSKeyId = Configuration["OSS:OSSKeyId"];
         OSSKeySecret = Configuration["OSS:OSSKeySecret"];
+        SmsAccessKeyId = Configuration["Sms:AccessKeyId"];
+        SmsAccessKeySecret = Configuration["Sms:AccessKeySecret"];
+        SmsSignName = Configuration["Sms:SignName"];
+        SmsCaptchaTemplateCode = Configuration["Sms:CaptchaTemplateCode"];
+        SmsCaptchaTemplateCodeEn = Configuration["Sms:CaptchaTemplateCodeEn"];
+        WechatAppId = Configuration["Wechat:WechatAppId"];
+        WechatAppSecret = Configuration["Wechat:WechatAppSecret"];
+        WechatOfficialAccount = Configuration["Wechat:WechatOfficialAccount"];
     }
 }

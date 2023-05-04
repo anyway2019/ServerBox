@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using Senparc.Weixin.AspNet;
+using Senparc.Weixin.RegisterServices;
 using ServerBox.Web.Extensions;
 using ServerBox.Web.Utils;
 using SqlSugar;
@@ -33,6 +35,8 @@ try
     builder.Services.AddMemoryCache();
     // Add services to the container.
     builder.Services.RegisterCustomServices(configuration);
+    // Add SenparcWeixinServices
+    builder.Services.AddSenparcWeixinServices(builder.Configuration);
     // Add sqlsugar
     var connectionString = builder.Configuration["Data:Conn"];
     //generate entity from connection string.
@@ -98,6 +102,8 @@ try
     });
 
     var app = builder.Build();
+
+    app.UseSenparcWeixin(app.Environment, null, null, register => { }, (register, setting) => { });
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
