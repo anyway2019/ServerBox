@@ -7,17 +7,19 @@ using NLog.Web;
 using Senparc.Weixin.AspNet;
 using Senparc.Weixin.RegisterServices;
 using ServerBox.Web.Extensions;
+using ServerBox.Web.Middlewares;
 using ServerBox.Web.Utils;
 using SqlSugar;
 
+
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-var logger = NLog.LogManager.Setup().LoadConfigurationFromFile($"nlog.{env}.config").GetCurrentClassLogger();
+var logger = LogManager.Setup().LoadConfigurationFromFile($"nlog.{env}.config").GetCurrentClassLogger();
 logger.Debug("server is starting.");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
     var configuration = builder.Configuration
-        .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+        .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile($"appsettings.json", optional: false)
         .AddJsonFile($"appsettings.{env}.json", optional: true)
         .AddEnvironmentVariables()
@@ -125,6 +127,8 @@ try
         .AllowAnyMethod()
         .AllowAnyHeader());
     
+    app.UseMiddleware<RewriteMiddleware>();//rewrite url before routing
+    
     app.UseRouting();
 
     app.UseAuthentication();
@@ -132,6 +136,10 @@ try
     app.UseAuthorization();
     
     app.MapControllers();
+    
+    //convert post request body which is json object to query string
+    app.UseWhen(context => context.Request.Method.Equals("POST"),
+        _ => { app.UseMiddleware<JsonToQueryStringMiddleware>(); });
     
     app.Run();
 }
@@ -142,5 +150,5 @@ catch (Exception exception)
 }
 finally
 {
-    NLog.LogManager.Shutdown();
+    LogManager.Shutdown();
 }
