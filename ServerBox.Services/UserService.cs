@@ -15,9 +15,9 @@ public class UserService :BaseService<User>
         _repository = new EfRepository<User>(db);
     }
 
-    public User GetUserByName(string name)
+    public User? GetUserByName(string name)
     {
-        var info = _repository.Db.Queryable<User>().Single(u => u.NickName == name);
+        var info = _repository.Db.Queryable<User>().Single(u => u.Username == name);
         return info;
     }
 
@@ -26,10 +26,7 @@ public class UserService :BaseService<User>
         var totalNum = 0;
         var list = _repository.Db.Queryable<User>().Select(c=>new UserModel()
         {
-            NickName = c.NickName,
-            Email = c.Email,
-            Desc = c.Desc,
-            Sex = c.Sex
+            NickName = c.Username,
         }).ToPageList(pageIndex, pageSize, ref totalNum);
         return new PagedList<UserModel>(list, pageSize, totalNum);
     }

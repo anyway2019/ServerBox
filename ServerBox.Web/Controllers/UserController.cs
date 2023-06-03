@@ -43,7 +43,7 @@ public class UserController : BaseController
     public IActionResult Login(string userName, string password)
     {
         var user = _userService.GetUserByName(userName);
-        if (user == null || user.Status == 0 || user.Pass != password.ToLower())
+        if (user == null || user.Password != password.ToLower())
             return FailResult("Invalid User");
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -75,18 +75,16 @@ public class UserController : BaseController
     }
     
     [Route("Add")]
+    [AllowAnonymous]
     [HttpPost]
-    [Authorize]
-    public IActionResult Add(string test)
+    public IActionResult Add(string username,string password)
     {
-        var user = new User
+        var user = _userService.GetUserByName(username);
+        if(user != null) return FailResult("user already exist");
+        user = new User
         {
-            NickName = test,
-            Pass = "123",
-            Email = "",
-            OpenId = "",
-            Status = 1,
-            CreateTime = DateTime.Now
+            Username = username,
+            Password = password,
         };
         try
         {
