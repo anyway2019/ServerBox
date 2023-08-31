@@ -1,4 +1,4 @@
-﻿using ServerBox.Services;
+﻿using System.Reflection;
 using ServerBox.Web.Middlewares;
 
 namespace ServerBox.Web.Extensions;
@@ -8,10 +8,25 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterCustomServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddScoped<UserService>();
-        services.AddHealthChecks().AddMySql(configuration["Data:Conn"]);
+        RegisterConfigurationServices(services,configuration);
+        RegisterServicesFromAssembly(services, "ServerBox.Services");
         RegisterMiddleware(services);
         return services;
+    }
+
+    private static void RegisterConfigurationServices(this IServiceCollection services,IConfiguration configuration)
+    {
+        services.AddHealthChecks().AddMySql(configuration["Data:Conn"] ?? string.Empty);
+    }
+
+    private static void RegisterServicesFromAssembly(this IServiceCollection services,string serviceNameSpace)
+    {
+        var assembly = Assembly.Load(serviceNameSpace);
+        var types = assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Service"));
+        foreach (var type in types)
+        {
+            services.AddScoped(type);
+        }
     }
     
     private static void RegisterMiddleware(this IServiceCollection services)

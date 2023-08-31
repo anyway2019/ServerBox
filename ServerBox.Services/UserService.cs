@@ -35,4 +35,10 @@ public class UserService :BaseService<User>
     {
         return _repository.Db.Queryable<User>().ToList();
     }
+    
+    public void MockAsyncTask()
+    {
+        //mock async task
+        Thread.Sleep(3000);
+    }
 }
