@@ -25,7 +25,7 @@ try
         .AddEnvironmentVariables()
         .Build();
     
-    // 配置 NLog
+    //NLog
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
     // read config
@@ -41,15 +41,24 @@ try
     builder.Services.AddSenparcWeixinServices(builder.Configuration);
     // Add sqlsugar
     var connectionString = builder.Configuration["Data:Conn"];
+
     //generate entity from connection string.
     //EntityGenerator.Build(connectionString,"ServerBox.Core.Domain");
-    builder.Services.AddSqlSugarClient<SqlSugarClient>((config) =>
+    builder.Services.AddScoped<SqlSugarClient>(sp =>
     {
-        config.ConnectionString = connectionString;
-        config.DbType = DbType.MySql;
-        config.IsAutoCloseConnection = true;
-        config.InitKeyType = InitKeyType.Attribute;
+        var connectionConfig = new ConnectionConfig
+        {
+            ConnectionString = connectionString,
+            DbType = DbType.MySql,
+            IsAutoCloseConnection = true,
+            InitKeyType = InitKeyType.Attribute
+        };
+        return new SqlSugarClient(connectionConfig, (d) =>
+        {
+            //TODO:other Advanced config
+        });
     });
+    
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -120,6 +129,12 @@ try
          
     app.UseCookiePolicy();
 
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor |
+                           Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+    });
+
     app.UseStaticFiles();
     
     app.UseCors(x => x
@@ -140,6 +155,8 @@ try
     //convert post request body which is json object to query string
     app.UseWhen(context => context.Request.Method.Equals("POST"),
         _ => { app.UseMiddleware<JsonToQueryStringMiddleware>(); });
+    
+    app.UseMiddleware<GlobalExceptionMiddleware>();
     
     app.Run();
 }

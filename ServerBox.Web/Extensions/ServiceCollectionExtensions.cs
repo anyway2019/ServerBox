@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddHealthChecks().AddMySql(configuration["Data:Conn"] ?? string.Empty);
     }
 
+    //register services by assembly
     private static void RegisterServicesFromAssembly(this IServiceCollection services,string serviceNameSpace)
     {
         var assembly = Assembly.Load(serviceNameSpace);
@@ -29,10 +30,12 @@ public static class ServiceCollectionExtensions
         }
     }
     
+    //register system middlewares
     private static void RegisterMiddleware(this IServiceCollection services)
     {
         services.AddSingleton<JsonToQueryStringMiddleware>();
         services.AddSingleton<RewriteMiddleware>();
+        services.AddSingleton<GlobalExceptionMiddleware>();
     }
 }
 

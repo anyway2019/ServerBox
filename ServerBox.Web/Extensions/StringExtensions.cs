@@ -15,6 +15,14 @@ public static partial class StringExtensions
         "^(?:[\\w\\!\\#\\$\\%\\&\\'\\*\\+\\-\\/\\=\\?\\^\\`\\{\\|\\}\\~]+\\.)*[\\w\\!\\#\\$\\%\\&\\'\\*\\+\\-\\/\\=\\?\\^\\`\\{\\|\\}\\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-](?!\\.)){0,61}[a-zA-Z0-9]?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\\[(?:(?:[01]?\\d{1,2}|2[0-4]\\d|25[0-5])\\.){3}(?:[01]?\\d{1,2}|2[0-4]\\d|25[0-5])\\]))$",
         RegexOptions.IgnoreCase, "zh-CN")]
     private static partial Regex EmailRegex();
+    
+    [GeneratedRegex("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$")]
+    private static partial Regex IpRegex();
+
+    public static bool IsIp(this string ip)
+    {
+        return !string.IsNullOrEmpty(ip)&& string.IsNullOrWhiteSpace(ip) && IpRegex().IsMatch(ip);
+    }
 
     public static bool IsValidEmail(this string email)
     {

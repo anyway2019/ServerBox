@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SqlSugar;
 
 namespace ServerBox.Core.Utils;
 
@@ -19,11 +20,18 @@ public class PagedList<T> : List<T>
             TotalPage += 1;
         }
     }
+    
+    public PagedList(ISugarQueryable<T> list, int pageIndex, int pageSize)
+    {
+        TotalPage = TotalCount / pageSize;
+        if (TotalCount % pageSize > 0)
+        {
+            TotalPage += 1;
+        }
+    }
 
     public int TotalCount { get; set; }
 
     public int TotalPage { get; set; }
-
-    public JObject beforePagedData { get; set; }
 
 }
